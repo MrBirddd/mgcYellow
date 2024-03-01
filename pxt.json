@@ -8,7 +8,8 @@
         "arcade-text": "github:microsoft/arcade-text#v1.3.0",
         "arcade-tile-util": "github:microsoft/arcade-tile-util#v1.1.0",
         "sevenseg": "*",
-        "arcade-story": "github:microsoft/arcade-storytelling#v1.0.3"
+        "arcade-story": "github:microsoft/arcade-storytelling#v1.0.3",
+        "arcade-sprite-data": "github:microsoft/arcade-sprite-data#v0.2.1"
     },
     "files": [
         "main.blocks",

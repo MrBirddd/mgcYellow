@@ -150,7 +150,7 @@ function fightSIGN () {
         `, SpriteKind.Player)
     MC.setPosition(30, 63)
     signMONSTER = sprites.create(assets.image`signMONSTER`, SpriteKind.Player)
-    signMONSTER.setPosition(105, 50)
+    signMONSTER.setPosition(115, 50)
     FIGHTtxt = textsprite.create("FIGHT")
     FIGHTtxt.setBorder(2, 1)
     FIGHTtxt.setPosition(70, 8)
@@ -172,6 +172,23 @@ function fightSIGN () {
     curSELECT = 0
     selectUI(curSELECT)
 }
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (sceneSELECT == 1) {
+        if (BUTTONS[curSELECT] == RUNtxt) {
+            game.showLongText("You can't run right now this is a TUTORIAL!", DialogLayout.Bottom)
+        } else if (BUTTONS[curSELECT] == ITEMtxt) {
+            ITEM_MENU()
+        } else if (BUTTONS[curSELECT] == FIGHTtxt) {
+            game.showLongText("b", DialogLayout.Bottom)
+        }
+        if (BUTTONS[curSELECT] == HealthPotionTXT) {
+            HPPHeld += -1
+        }
+        if (BUTTONS[curSELECT] == MagicPotionTXT) {
+            MPPHeld += -1
+        }
+    }
+})
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (sceneSELECT == 0) {
         MC.setImage(img`
@@ -193,26 +210,10 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . f f f f f f . . . . . 
             `)
     }
-    if (sceneSELECT == 1) {
-        if (curSELECT == 0) {
-            curSELECT = 2
-        } else {
-            curSELECT += -1
-        }
-        selectUI(curSELECT)
-    }
 })
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (sceneSELECT == 1) {
-        if (BUTTONS[curSELECT] == RUNtxt) {
-            game.showLongText("You can't run right now this is a TUTORIAL!", DialogLayout.Bottom)
-        } else if (BUTTONS[curSELECT] == ITEMtxt) {
-            ITEM_MENU(game.ask("are ur bogos binted"))
-        } else {
-            game.showLongText("b", DialogLayout.Bottom)
-        }
-    }
-})
+function DelITEMMENU () {
+	
+}
 function SCENE () {
     if (sceneSELECT == 0) {
         theGarden()
@@ -220,8 +221,26 @@ function SCENE () {
         fightSIGN()
     }
 }
-function ITEM_MENU (bool: boolean) {
-	
+function ITEM_MENU () {
+    if (HPPHeld > 0 && MPPHeld > 0) {
+        if (HPPHeld > 0) {
+            HealthPotionTXT = textsprite.create("Health Potion")
+            HealthPotionTXT.setPosition(40, 94)
+            HealthPotionTXT.setBorder(2, 1)
+        }
+        if (MPPHeld > 0) {
+            MagicPotionTXT = textsprite.create("Magic Potion")
+            MagicPotionTXT.setPosition(37, 108)
+            MagicPotionTXT.setBorder(2, 1)
+        }
+        BUTTONS.push(HealthPotionTXT)
+        BUTTONS.push(MagicPotionTXT)
+        BUTTONS = [HealthPotionTXT, MagicPotionTXT]
+        curSELECT = 0
+        selectUI(curSELECT)
+    } else {
+        game.splash("You Have No More Items Left!")
+    }
 }
 function selectUI (num: number) {
     for (let index = 0; index <= BUTTONS.length - 1; index++) {
@@ -253,6 +272,14 @@ controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . f f f f f f . . . . . 
             `)
     }
+    if (sceneSELECT == 1) {
+        if (curSELECT == 0) {
+            curSELECT = BUTTONS.length - 1
+        } else {
+            curSELECT += -1
+        }
+        selectUI(curSELECT)
+    }
 })
 sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite, otherSprite) {
     if (sprite.overlapsWith(SIGN)) {
@@ -283,6 +310,14 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . e e 5 5 5 5 b c . . . . 
             . . . . . f f f f f f . . . . . 
             `)
+    }
+    if (sceneSELECT == 1) {
+        if (curSELECT == BUTTONS.length - 1) {
+            curSELECT = 0
+        } else {
+            curSELECT += 1
+        }
+        selectUI(curSELECT)
     }
 })
 function theGarden () {
@@ -332,16 +367,10 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
             . . . . . f f f f f f . . . . . 
             `)
     }
-    if (sceneSELECT == 1) {
-        if (curSELECT == 2) {
-            curSELECT = 0
-        } else {
-            curSELECT += 1
-        }
-        selectUI(curSELECT)
-    }
 })
 let SIGN: Sprite = null
+let MagicPotionTXT: TextSprite = null
+let HealthPotionTXT: TextSprite = null
 let curSELECT = 0
 let BUTTONS: TextSprite[] = []
 let MAGICENERGY: StatusBarSprite = null
@@ -351,6 +380,10 @@ let ITEMtxt: TextSprite = null
 let FIGHTtxt: TextSprite = null
 let signMONSTER: Sprite = null
 let MC: Sprite = null
+let MPPHeld = 0
+let HPPHeld = 0
 let sceneSELECT = 0
 sceneSELECT = 1
 SCENE()
+HPPHeld = 3
+MPPHeld = 3
