@@ -149,8 +149,10 @@ function fightSIGN () {
         . . . . . f f f f f f . . . . . 
         `, SpriteKind.Player)
     MC.setPosition(30, 63)
+    pHP = 100
     signMONSTER = sprites.create(assets.image`signMONSTER`, SpriteKind.Player)
     signMONSTER.setPosition(115, 50)
+    signHealth = 300
     FIGHTtxt = textsprite.create("FIGHT")
     FIGHTtxt.setBorder(2, 1)
     FIGHTtxt.setPosition(70, 8)
@@ -172,23 +174,6 @@ function fightSIGN () {
     curSELECT = 0
     selectUI(curSELECT)
 }
-controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (sceneSELECT == 1) {
-        if (BUTTONS[curSELECT] == RUNtxt) {
-            game.showLongText("You can't run right now this is a TUTORIAL!", DialogLayout.Bottom)
-        } else if (BUTTONS[curSELECT] == ITEMtxt) {
-            ITEM_MENU()
-        } else if (BUTTONS[curSELECT] == FIGHTtxt) {
-            game.showLongText("b", DialogLayout.Bottom)
-        }
-        if (BUTTONS[curSELECT] == HealthPotionTXT) {
-            HPPHeld += -1
-        }
-        if (BUTTONS[curSELECT] == MagicPotionTXT) {
-            MPPHeld += -1
-        }
-    }
-})
 controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
     if (sceneSELECT == 0) {
         MC.setImage(img`
@@ -211,8 +196,48 @@ controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
             `)
     }
 })
+controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (sceneSELECT == 1) {
+        if (BUTTONS[curSELECT] == RUNtxt) {
+            game.showLongText("You can't run right now this is a TUTORIAL!", DialogLayout.Bottom)
+            Turn(1)
+        } else if (BUTTONS[curSELECT] == ITEMtxt) {
+            ITEM_MENU()
+            sprites.destroy(ITEMtxt)
+        } else if (BUTTONS[curSELECT] == FIGHTtxt) {
+            game.showLongText("b", DialogLayout.Bottom)
+            Turn(1)
+        }
+        if (BUTTONS[curSELECT] == HealthPotionTXT) {
+            HPPHeld += -1
+            DelITEMMENU()
+        }
+        if (BUTTONS[curSELECT] == MagicPotionTXT) {
+            MPPHeld += -1
+            DelITEMMENU()
+        }
+    }
+})
+function enemyAttack () {
+    timer.after(100, function () {
+        TURN += -1
+        game.splash("stinker")
+    })
+}
+function Turn (turnnum: number) {
+    if (turnnum == 1) {
+        enemyAttack()
+    }
+}
 function DelITEMMENU () {
-	
+    ITEMtxt = textsprite.create("ITEM")
+    ITEMtxt.setBorder(2, 1)
+    ITEMtxt.setPosition(38, 8)
+    sprites.destroy(HealthPotionTXT)
+    sprites.destroy(MagicPotionTXT)
+    BUTTONS = [RUNtxt, ITEMtxt, FIGHTtxt]
+    curSELECT = 0
+    Turn(1)
 }
 function SCENE () {
     if (sceneSELECT == 0) {
@@ -222,25 +247,33 @@ function SCENE () {
     }
 }
 function ITEM_MENU () {
-    if (HPPHeld > 0 && MPPHeld > 0) {
-        if (HPPHeld > 0) {
-            HealthPotionTXT = textsprite.create("Health Potion")
-            HealthPotionTXT.setPosition(40, 94)
-            HealthPotionTXT.setBorder(2, 1)
+    timer.after(100, function () {
+        BUTTONS.shift()
+        BUTTONS.shift()
+        BUTTONS.shift()
+        if (HPPHeld > 0 || MPPHeld > 0) {
+            if (HPPHeld > 0) {
+                HealthPotionTXT = textsprite.create("Health Potion")
+                HealthPotionTXT.setPosition(40, 94)
+                HealthPotionTXT.setBorder(2, 1)
+                BUTTONS.push(HealthPotionTXT)
+            }
+            if (MPPHeld > 0) {
+                MagicPotionTXT = textsprite.create("Magic Potion")
+                MagicPotionTXT.setPosition(37, 108)
+                MagicPotionTXT.setBorder(2, 1)
+                BUTTONS.push(MagicPotionTXT)
+            }
+            curSELECT = 0
+            selectUI(curSELECT)
+        } else {
+            game.splash("You Have No More Items Left!")
+            BUTTONS = [RUNtxt, FIGHTtxt]
+            FIGHTtxt.setPosition(41, 8)
+            curSELECT = 0
+            selectUI(curSELECT)
         }
-        if (MPPHeld > 0) {
-            MagicPotionTXT = textsprite.create("Magic Potion")
-            MagicPotionTXT.setPosition(37, 108)
-            MagicPotionTXT.setBorder(2, 1)
-        }
-        BUTTONS.push(HealthPotionTXT)
-        BUTTONS.push(MagicPotionTXT)
-        BUTTONS = [HealthPotionTXT, MagicPotionTXT]
-        curSELECT = 0
-        selectUI(curSELECT)
-    } else {
-        game.splash("You Have No More Items Left!")
-    }
+    })
 }
 function selectUI (num: number) {
     for (let index = 0; index <= BUTTONS.length - 1; index++) {
@@ -369,6 +402,7 @@ controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
     }
 })
 let SIGN: Sprite = null
+let TURN = 0
 let MagicPotionTXT: TextSprite = null
 let HealthPotionTXT: TextSprite = null
 let curSELECT = 0
@@ -378,12 +412,14 @@ let HEALTHBAR: StatusBarSprite = null
 let RUNtxt: TextSprite = null
 let ITEMtxt: TextSprite = null
 let FIGHTtxt: TextSprite = null
+let signHealth = 0
 let signMONSTER: Sprite = null
+let pHP = 0
 let MC: Sprite = null
 let MPPHeld = 0
 let HPPHeld = 0
 let sceneSELECT = 0
-sceneSELECT = 1
+sceneSELECT = 0
 SCENE()
 HPPHeld = 3
 MPPHeld = 3
