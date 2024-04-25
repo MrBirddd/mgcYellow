@@ -2,6 +2,37 @@ namespace SpriteKind {
     export const NPC = SpriteKind.create()
     export const imgENEMY = SpriteKind.create()
 }
+controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (sceneSELECT == 0) {
+        MC.setImage(img`
+            . . . . . . c c c . . . . . . . 
+            . . . . . . c 5 b c . . . . . . 
+            . . . . c c c 5 5 c c c . . . . 
+            . . c c c c 5 5 5 5 c b c c . . 
+            . c b b 5 b 5 5 5 5 b 5 b b c . 
+            . c b 5 5 b b 5 5 b b 5 5 b c . 
+            . . c 5 5 5 b b b b 5 5 5 f . . 
+            . . f f 5 5 5 5 5 5 5 5 f f . . 
+            . . f f f f f f f f f f f f . . 
+            . . f f f f f f f f f f f f . . 
+            . . . f f f f f f f f f f . . . 
+            . . . e e f f f f f f f e . . . 
+            . . e b f b 5 b b 5 b c b e . . 
+            . . e e f 5 5 5 5 5 5 f e e . . 
+            . . . . c b 5 5 5 5 b c . . . . 
+            . . . . . f f f f f f . . . . . 
+            `)
+    }
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite, otherSprite) {
+    if (sprite.overlapsWith(SIGN)) {
+        game.showLongText("Hey. It's me the sign", DialogLayout.Bottom)
+        game.showLongText("You should...", DialogLayout.Bottom)
+        game.showLongText("Fight Me.", DialogLayout.Bottom)
+        sceneSELECT = 1
+        SCENE()
+    }
+})
 function fightSIGN () {
     sprites.destroyAllSpritesOfKind(SpriteKind.Player)
     sprites.destroyAllSpritesOfKind(SpriteKind.NPC)
@@ -173,40 +204,22 @@ function fightSIGN () {
     BUTTONS = [RUNtxt, ITEMtxt, FIGHTtxt]
     curSELECT = 0
     selectUI(curSELECT)
+    timer.after(500, function () {
+        game.showLongText("Welcome to the tutorial!", DialogLayout.Bottom)
+        game.showLongText("Use the DIRECTIONAL BUTTONS to navigate the menu.", DialogLayout.Bottom)
+        game.showLongText("You have 3 Health Potions and 3 Magic Potions to start with.", DialogLayout.Bottom)
+        game.showLongText("Goodluck! (Try using all the items and buttons.)", DialogLayout.Bottom)
+    })
 }
-controller.up.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (sceneSELECT == 0) {
-        MC.setImage(img`
-            . . . . . . c c c . . . . . . . 
-            . . . . . . c 5 b c . . . . . . 
-            . . . . c c c 5 5 c c c . . . . 
-            . . c c c c 5 5 5 5 c b c c . . 
-            . c b b 5 b 5 5 5 5 b 5 b b c . 
-            . c b 5 5 b b 5 5 b b 5 5 b c . 
-            . . c 5 5 5 b b b b 5 5 5 f . . 
-            . . f f 5 5 5 5 5 5 5 5 f f . . 
-            . . f f f f f f f f f f f f . . 
-            . . f f f f f f f f f f f f . . 
-            . . . f f f f f f f f f f . . . 
-            . . . e e f f f f f f f e . . . 
-            . . e b f b 5 b b 5 b c b e . . 
-            . . e e f 5 5 5 5 5 5 f e e . . 
-            . . . . c b 5 5 5 5 b c . . . . 
-            . . . . . f f f f f f . . . . . 
-            `)
-    }
-})
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
     if (sceneSELECT == 1) {
         if (BUTTONS[curSELECT] == RUNtxt) {
             game.showLongText("You can't run right now this is a TUTORIAL!", DialogLayout.Bottom)
-            Turn(1)
         } else if (BUTTONS[curSELECT] == ITEMtxt) {
             ITEM_MENU()
             sprites.destroy(ITEMtxt)
         } else if (BUTTONS[curSELECT] == FIGHTtxt) {
-            game.showLongText("b", DialogLayout.Bottom)
-            Turn(1)
+            game.showLongText("There is no fighting yet!", DialogLayout.Bottom)
         }
         if (BUTTONS[curSELECT] == HealthPotionTXT) {
             HPPHeld += -1
@@ -218,17 +231,36 @@ controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
         }
     }
 })
-function enemyAttack () {
-    timer.after(100, function () {
-        TURN += -1
-        game.splash("stinker")
-    })
-}
-function Turn (turnnum: number) {
-    if (turnnum == 1) {
-        enemyAttack()
+controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (sceneSELECT == 0) {
+        MC.setImage(img`
+            . . . . . . . c c . . . . . . . 
+            . . . . . . c 5 c . . . . . . . 
+            . . . . c c 5 5 5 c c c . . . . 
+            . . c c c c 5 5 5 5 c b c c . . 
+            . c b b 5 b 5 5 5 5 b 5 b b c . 
+            . c b 5 5 b b 5 5 b b 5 5 b c . 
+            . . c 5 5 5 b b b b 5 5 5 f . . 
+            . . . f 5 5 5 5 5 5 5 5 f f . . 
+            . . . . f e e e f b e e f f . . 
+            . . . . f e b b f 1 b f f f . . 
+            . . . . f b b b b b b f f . . . 
+            . . . . . f e e e e f e e . . . 
+            . . . . . f 5 b b e b b e . . . 
+            . . . . f 5 5 5 5 e b b e . . . 
+            . . . . c b 5 5 5 5 e e . . . . 
+            . . . . . f f f f f f . . . . . 
+            `)
     }
-}
+    if (sceneSELECT == 1) {
+        if (curSELECT == 0) {
+            curSELECT = BUTTONS.length - 1
+        } else {
+            curSELECT += -1
+        }
+        selectUI(curSELECT)
+    }
+})
 function DelITEMMENU () {
     ITEMtxt = textsprite.create("ITEM")
     ITEMtxt.setBorder(2, 1)
@@ -237,7 +269,7 @@ function DelITEMMENU () {
     sprites.destroy(MagicPotionTXT)
     BUTTONS = [RUNtxt, ITEMtxt, FIGHTtxt]
     curSELECT = 0
-    Turn(1)
+    selectUI(curSELECT)
 }
 function SCENE () {
     if (sceneSELECT == 0) {
@@ -275,54 +307,6 @@ function ITEM_MENU () {
         }
     })
 }
-function selectUI (num: number) {
-    for (let index = 0; index <= BUTTONS.length - 1; index++) {
-        if (index == num) {
-            BUTTONS[index].setBorder(2, 2)
-        } else {
-            BUTTONS[index].setBorder(2, 1)
-        }
-    }
-}
-controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (sceneSELECT == 0) {
-        MC.setImage(img`
-            . . . . . . . c c . . . . . . . 
-            . . . . . . c 5 c . . . . . . . 
-            . . . . c c 5 5 5 c c c . . . . 
-            . . c c c c 5 5 5 5 c b c c . . 
-            . c b b 5 b 5 5 5 5 b 5 b b c . 
-            . c b 5 5 b b 5 5 b b 5 5 b c . 
-            . . c 5 5 5 b b b b 5 5 5 f . . 
-            . . . f 5 5 5 5 5 5 5 5 f f . . 
-            . . . . f e e e f b e e f f . . 
-            . . . . f e b b f 1 b f f f . . 
-            . . . . f b b b b b b f f . . . 
-            . . . . . f e e e e f e e . . . 
-            . . . . . f 5 b b e b b e . . . 
-            . . . . f 5 5 5 5 e b b e . . . 
-            . . . . c b 5 5 5 5 e e . . . . 
-            . . . . . f f f f f f . . . . . 
-            `)
-    }
-    if (sceneSELECT == 1) {
-        if (curSELECT == 0) {
-            curSELECT = BUTTONS.length - 1
-        } else {
-            curSELECT += -1
-        }
-        selectUI(curSELECT)
-    }
-})
-sprites.onOverlap(SpriteKind.Player, SpriteKind.NPC, function (sprite, otherSprite) {
-    if (sprite.overlapsWith(SIGN)) {
-        game.showLongText("Hey. It's me the sign", DialogLayout.Bottom)
-        game.showLongText("You should...", DialogLayout.Bottom)
-        game.showLongText("Fight Me.", DialogLayout.Bottom)
-        sceneSELECT = 1
-        SCENE()
-    }
-})
 controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     if (sceneSELECT == 0) {
         MC.setImage(img`
@@ -353,6 +337,37 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
         selectUI(curSELECT)
     }
 })
+function selectUI (num: number) {
+    for (let index = 0; index <= BUTTONS.length - 1; index++) {
+        if (index == num) {
+            BUTTONS[index].setBorder(2, 2)
+        } else {
+            BUTTONS[index].setBorder(2, 1)
+        }
+    }
+}
+controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
+    if (sceneSELECT == 0) {
+        MC.setImage(img`
+            . . . . . . . c c c . . . . . . 
+            . . . . . . c b 5 c . . . . . . 
+            . . . . c c c 5 5 c c c . . . . 
+            . . c c b c 5 5 5 5 c c c c . . 
+            . c b b 5 b 5 5 5 5 b 5 b b c . 
+            . c b 5 5 b b 5 5 b b 5 5 b c . 
+            . . f 5 5 5 b b b b 5 5 5 c . . 
+            . . f f 5 5 5 5 5 5 5 5 f f . . 
+            . . f f f b f e e f b f f f . . 
+            . . f f f 1 f b b f 1 f f f . . 
+            . . . f f b b b b b b f f . . . 
+            . . . e e f e e e e f e e . . . 
+            . . e b c b 5 b b 5 b f b e . . 
+            . . e e f 5 5 5 5 5 5 f e e . . 
+            . . . . c b 5 5 5 5 b c . . . . 
+            . . . . . f f f f f f . . . . . 
+            `)
+    }
+})
 function theGarden () {
     tiles.setCurrentTilemap(tilemap`level1`)
     MC = sprites.create(img`
@@ -379,30 +394,6 @@ function theGarden () {
     tiles.placeOnTile(SIGN, tiles.getTileLocation(7, 13))
     controller.moveSprite(MC, 100, 100)
 }
-controller.down.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (sceneSELECT == 0) {
-        MC.setImage(img`
-            . . . . . . . c c c . . . . . . 
-            . . . . . . c b 5 c . . . . . . 
-            . . . . c c c 5 5 c c c . . . . 
-            . . c c b c 5 5 5 5 c c c c . . 
-            . c b b 5 b 5 5 5 5 b 5 b b c . 
-            . c b 5 5 b b 5 5 b b 5 5 b c . 
-            . . f 5 5 5 b b b b 5 5 5 c . . 
-            . . f f 5 5 5 5 5 5 5 5 f f . . 
-            . . f f f b f e e f b f f f . . 
-            . . f f f 1 f b b f 1 f f f . . 
-            . . . f f b b b b b b f f . . . 
-            . . . e e f e e e e f e e . . . 
-            . . e b c b 5 b b 5 b f b e . . 
-            . . e e f 5 5 5 5 5 5 f e e . . 
-            . . . . c b 5 5 5 5 b c . . . . 
-            . . . . . f f f f f f . . . . . 
-            `)
-    }
-})
-let SIGN: Sprite = null
-let TURN = 0
 let MagicPotionTXT: TextSprite = null
 let HealthPotionTXT: TextSprite = null
 let curSELECT = 0
@@ -415,6 +406,7 @@ let FIGHTtxt: TextSprite = null
 let signHealth = 0
 let signMONSTER: Sprite = null
 let pHP = 0
+let SIGN: Sprite = null
 let MC: Sprite = null
 let MPPHeld = 0
 let HPPHeld = 0
